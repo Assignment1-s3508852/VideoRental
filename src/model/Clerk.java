@@ -9,6 +9,15 @@ public class Clerk {
 	public boolean isAdmin() {
 		return admin;
 	}
+	
+	public void init(String aName, String aAddress, String aEmail, int aTel, boolean aIsAdmin) {
+		this.name = aName;
+		this.address = aAddress;
+		this.email = aEmail;
+		this.tel = aTel;
+		this.admin = aIsAdmin;
+	}
+	
 	public void setAdmin(boolean admin) {
 		this.admin = admin;
 	}

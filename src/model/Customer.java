@@ -4,8 +4,17 @@ public class Customer {
 	private int customerID;
 	private String name;
 	private String address;
+	private String email;
 	private int telNo;
 	private boolean rating;
+	
+	public void init(int aCustID, String aName, String aAddress, String aEmail, int aTel, boolean aRating) {
+		this.name = aName;
+		this.address = aAddress;
+		this.email = aEmail;
+		this.telNo = aTel;
+		this.rating = aRating;
+	}
 	
 	public int getCustomerID() {
 		return customerID;
@@ -45,6 +54,14 @@ public class Customer {
 
 	public void setRating(boolean rating) {
 		this.rating = rating;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	
 }
