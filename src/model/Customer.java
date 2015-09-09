@@ -6,7 +6,7 @@ public class Customer {
 	private String address;
 	private String email;
 	private int telNo;
-	private boolean rating;
+	private boolean rating = false;
 	
 	public void init(int aCustID, String aName, String aAddress, String aEmail, int aTel, boolean aRating) {
 		this.name = aName;
@@ -64,4 +64,7 @@ public class Customer {
 		this.email = email;
 	}
 	
+	public String toString() {
+		return "name : " + name + "\n" + "admin : " + (rating? "Yes" : "No") + "\n" + "address : " + address + "\n" + "email : " + email + "\n" + "tel : " + Integer.toString(telNo);	
+	}
 }

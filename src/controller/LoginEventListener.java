@@ -13,6 +13,10 @@ public class LoginEventListener implements ActionListener {
 	VideoSystem _videoSystem;
 	private Map<String, Customer> _mCustomer = new HashMap<String, Customer>();
 	private Map<String, Clerk> _mClerk = new HashMap<String, Clerk>();
+	
+	private Customer _currentCustomer;
+	private Clerk _currentClerk;
+	
 	public enum TypeUser {
 		TypeUserCustomer, TypeUserClerk, TypeUserAdmin, TypeUserNone;
 	}
@@ -42,18 +46,26 @@ public class LoginEventListener implements ActionListener {
 		String pass_ = "123";
 //		String verifyUser;		
 		if (this._mCustomer.containsKey(aUsername)) {
-//			Customer customer = this._mCustomer.get(aUsername);
+			this._currentCustomer = this._mCustomer.get(aUsername);
 			if (aPassword.equals(pass_)) {
 				return TypeUser.TypeUserCustomer;
 			}
 		}
 		if (this._mClerk.containsKey(aUsername)) {
 			if (aPassword.equals(pass_)) {
-				Clerk clerk = this._mClerk.get(aUsername);
-				return clerk.isAdmin()? TypeUser.TypeUserAdmin : TypeUser.TypeUserClerk; 
+				this._currentClerk = this._mClerk.get(aUsername);
+				return this._currentClerk.isAdmin()? TypeUser.TypeUserAdmin : TypeUser.TypeUserClerk; 
 			} 
 		}
 		return TypeUser.TypeUserNone;
+	}
+	
+	public Clerk getCurrentClerk() {
+		return this._currentClerk;
+	}
+	
+	public Customer getCurrentCustomer() {
+		return this._currentCustomer;
 	}
 	
 	@Override

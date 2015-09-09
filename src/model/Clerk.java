@@ -1,14 +1,11 @@
 package model;
 
 public class Clerk {
-	private boolean admin;
+	private boolean admin = false;
 	private String name;
 	private String address;
 	private String email;
 	private int tel;
-	public boolean isAdmin() {
-		return admin;
-	}
 	
 	public void init(String aName, String aAddress, String aEmail, int aTel, boolean aIsAdmin) {
 		this.name = aName;
@@ -18,6 +15,9 @@ public class Clerk {
 		this.admin = aIsAdmin;
 	}
 	
+	public boolean isAdmin() {
+		return admin;
+	}
 	public void setAdmin(boolean admin) {
 		this.admin = admin;
 	}
@@ -44,5 +44,8 @@ public class Clerk {
 	}
 	public void setTel(int tel) {
 		this.tel = tel;
+	}
+	public String toString() {
+		return "name : " + name + "\n" + "admin : " + (admin? "Yes" : "No") + "\n" + "address : " + address + "\n" + "email : " + email + "\n" + "tel : " + Integer.toString(tel);
 	}
 }

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import model.Video;
+import model.Video.Categories;
 
 public class LoadVideoEventListener implements ActionListener {
 	VideoSystem _videoSystem;
@@ -31,6 +32,34 @@ public class LoadVideoEventListener implements ActionListener {
 	
 	public Map<String, Video> getListOfVideos() {
 		return this._mVideo;
+	}
+	
+	public Map<String, Video> getSearchByKeywordListOfVideos(String aKeyword) {
+		Map<String, Video> mVideoSearched = new HashMap<String, Video>();
+		for (Map.Entry<String, Video> entry : this._mVideo.entrySet()) {
+			Video video = entry.getValue();
+			if (video.getTitle().contains(aKeyword)) {
+				mVideoSearched.put(entry.getKey(), video);
+			}
+		}
+		if (mVideoSearched.size() > 0) {
+			return mVideoSearched;
+		}
+		return null;
+	}
+	
+	public Map<String, Video> getSearchByCategoryListOfVideos(Categories aCategory) {
+		Map<String, Video> mVideoSearched = new HashMap<String, Video>();
+		for (Map.Entry<String, Video> entry : this._mVideo.entrySet()) {
+			Video video = entry.getValue();
+			if (video.getCategories() == aCategory) {
+				mVideoSearched.put(entry.getKey(), video);
+			}
+		}
+		if (mVideoSearched.size() > 0) {
+			return mVideoSearched;
+		}
+		return null;
 	}
 	
 	@Override

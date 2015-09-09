@@ -2,7 +2,7 @@ package model;
 import model.VideoCopy;
 
 public class Video {
-	private enum Categories {
+	public enum Categories {
 		Comedy, Action, Family, Drama 
 	}
 	private VideoCopy videoCopy;
@@ -13,6 +13,18 @@ public class Video {
 	private int rentPeriod;
 	private String yearRelease;
 	private float overdueCharge;
+	
+	public void init(int aVideoID, String aTitle, float aRentalCharge, Categories aCategories, int aRentPeriod, String aYearRelease, float aOverdueCharge, VideoCopy aVideoCopy) {
+		this.videoID = aVideoID;
+		this.title = aTitle;
+		this.rentalCharge = aRentalCharge;
+		this.categories = aCategories;
+		this.rentPeriod = aRentPeriod;
+		this.yearRelease = aYearRelease;
+		this.overdueCharge = aOverdueCharge;
+		this.videoCopy = aVideoCopy;
+	}
+	
 	public int getVideoID() {
 		return videoID;
 	}
@@ -61,4 +73,10 @@ public class Video {
 	public void setVideoCopy(VideoCopy videoCopy) {
 		this.videoCopy = videoCopy;
 	}
+	
+	//int aVideoID, String aTitle, float aRentalCharge, Categories aCategories, int aRentPeriod, String aYearRelease, float aOverdueCharge, VideoCopy aVideoCopy
+	public String toString() {
+		return "VideoID :" + Integer.toString(videoID) + "Title : " + title + "\n" + "RentalCharge : " + Float.toString(rentalCharge) + "\n" + "Categories" + categories + "\n" + "RentPeriod : " + Float.toString(rentPeriod) + "\n" + "YearRelease : " + yearRelease + "\n" + "OverdueCharge : " + Float.toString(overdueCharge);
+	}
+
 }
