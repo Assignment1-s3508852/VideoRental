@@ -42,10 +42,7 @@ public class LoadVideoEventListener implements ActionListener {
 				mVideoSearched.put(entry.getKey(), video);
 			}
 		}
-		if (mVideoSearched.size() > 0) {
-			return mVideoSearched;
-		}
-		return null;
+		return mVideoSearched;
 	}
 	
 	public Map<String, Video> getSearchByCategoryListOfVideos(Categories aCategory) {
@@ -56,10 +53,7 @@ public class LoadVideoEventListener implements ActionListener {
 				mVideoSearched.put(entry.getKey(), video);
 			}
 		}
-		if (mVideoSearched.size() > 0) {
-			return mVideoSearched;
-		}
-		return null;
+		return mVideoSearched;
 	}
 	
 	@Override
