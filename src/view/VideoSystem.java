@@ -152,8 +152,10 @@ public class VideoSystem extends JFrame {
 						}
 					}
 					
-				// Add video
+				//add video
 				} else if (inputFunction.equals("2")) {
+					//Assign to Frank					
+					
 //					String inputTitle = this.getUserInputByShowingMessage("Title : ");
 //					String inputRentalCharge = this.getUserInputByShowingMessage("RentalCharge : ");
 //					String inputCat = this.getUserInputByShowingMessage("Category[1:Comedy, 2:Action, 3:Family, 4:Drama] : ");
@@ -183,10 +185,23 @@ public class VideoSystem extends JFrame {
 //						System.out.println("Add Successfully");
 //					
 //					this.presentOption();
+				
+				//check out video
+				} else if (inputFunction.equals("3")) {
+				//Assign to Frank					
+
+					
+				//check return video
+				} else if (inputFunction.equals("4")) {
+				//Assign to Matt
+					
+				//show all video
 				} else if (inputFunction.equals("5")) {
 					this.showListOfVideos(this._loadVideoBL.getListOfVideos());
 					this.presentOption();
-				}
+					
+				//communicate with users
+				} else if (inputFunction.equals("6"))
 				System.out.println(inputFunction);
 			}
 		}
@@ -201,10 +216,12 @@ public class VideoSystem extends JFrame {
 				String promptFunction = "*****Function*****\n1 = Show videos\n2 = Search by title\n3 = Search by category\n4 = Rent video\n";
 				String inputFunction = this.getUserInputByShowingMessage(promptFunction);
 				
+				//Show all videos
 				if (inputFunction.equals("1")) {
 					this.showListOfVideos(this._loadVideoBL.getListOfVideos());
 					this.presentOption();
 					
+				//Search by title
 				} else if (inputFunction.equals("2")) {
 					String inputKeyword = this.getUserInputByShowingMessage("Search by keyword : ");
 					if (inputKeyword.length() > 0) {
@@ -212,11 +229,13 @@ public class VideoSystem extends JFrame {
 					}
 					this.presentOption();
 				
+				//Search by category
 				} else if (inputFunction.equals("3")) {
 					String inputCategory = this.getUserInputByShowingMessage("*****Categories*****\n1 = Comedy\n2 = Action\n3 = Family\n4 = Drama\n");
 					this.showListOfVideos(this._loadVideoBL.getSearchByCategoryListOfVideos(Categories.values()[Integer.valueOf(inputCategory) - 1]));
 					this.presentOption();
 				
+				//Rent video
 				} else if (inputFunction.equals("4")) {
 					String inputVideoID = this.getUserInputByShowingMessage("Which videoID : ");
 					System.out.println(inputVideoID);
