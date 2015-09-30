@@ -1,6 +1,5 @@
 package view;
 
-import static org.junit.Assert.assertEquals;
 import controller.LoginEventListener;
 import controller.LoginEventListener.TypeUser;
 import controller.LoadVideoEventListener;
@@ -11,6 +10,7 @@ import java.util.Scanner;
 
 import javax.swing.JFrame;
 
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import model.Video;
@@ -21,8 +21,8 @@ public class VideoSystem extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private Scanner scannerInput;
 	
-	private LoginEventListener _loginBL = new LoginEventListener(this);
-	private LoadVideoEventListener _loadVideoBL = new LoadVideoEventListener(this);
+	private LoginEventListener _loginBL = null;
+	private LoadVideoEventListener _loadVideoBL = null; 
 	
 	TypeUser _typeUser;
 	
@@ -30,51 +30,60 @@ public class VideoSystem extends JFrame {
 	public void testLogin() {
 		System.out.println("testLogin");
 
-		String testUsername = "champ_customer123";
-		String testPassword = "123";
-		
-		assertEquals("invalid user!!!", 
-				this._loginBL.verifyLogin(testUsername, testPassword), 
-				this._loginBL.verifyLogin("champ_customer", "123"));
+//		String testUsername = "champ_customer123";
+//		String testPassword = "123";
+//		
+//		assertEquals("invalid user!!!", 
+//				this._loginBL.verifyLogin(testUsername, testPassword), 
+//				this._loginBL.verifyLogin("champ_customer", "123"));
 	}
 	
-	@Test 
-	public void testShowInformationOfAdmin() {
-		System.out.println("testShowInformationOfAdmin");
-		
-		String testInput = "1";
-		String inputOption = this.getUserInputByShowingMessage("*****Option*****\n1 = information, 2 = function : ");
-		assertEquals("wrong input!!!", 
-				testInput, 
-				inputOption);		
-	}
-	
-	@Test
-	public void testSearchVideo() {
-		System.out.println("testSearchVideo");
-		
-		int numVideo = 1;
-		String inputKeyword = this.getUserInputByShowingMessage("Keyword : ");
-		
-		assertEquals("wrong number of video", 
-				numVideo, 
-				this._loadVideoBL.getSearchByKeywordListOfVideos(inputKeyword).size());
-	}
-	
-	@Test
-	public void testSearchCatogoryVideo() {
-		System.out.println("testSearchCatogoryVideo");
-		
-		int numVideo = 1;
-		String inputCategory = this.getUserInputByShowingMessage("*****Categories*****\n1 = Comedy\n2 = Action\n3 = Family\n4 = Drama\n");
-		assertEquals("wrong number of video", 
-				numVideo, 
-				this._loadVideoBL.getSearchByCategoryListOfVideos(Categories.values()[Integer.valueOf(inputCategory) - 1]).size());
-	}
+//	@Test 
+//	public void testShowInformationOfAdmin() {
+//		System.out.println("testShowInformationOfAdmin");
+//		
+//		String testInput = "1";
+//		String inputOption = this.getUserInputByShowingMessage("*****Option*****\n1 = information, 2 = function : ");
+//		assertEquals("wrong input!!!", 
+//				testInput, 
+//				inputOption);		
+//	}
+//	
+//	@Test
+//	public void testSearchVideo() {
+//		System.out.println("testSearchVideo");
+//		
+//		int numVideo = 1;
+//		String inputKeyword = this.getUserInputByShowingMessage("Keyword : ");
+//		
+//		assertEquals("wrong number of video", 
+//				numVideo, 
+//				this._loadVideoBL.getSearchByKeywordListOfVideos(inputKeyword).size());
+//	}
+//	
+//	@Test
+//	public void testSearchCatogoryVideo() {
+//		System.out.println("testSearchCatogoryVideo");
+//		
+//		int numVideo = 1;
+//		String inputCategory = this.getUserInputByShowingMessage("*****Categories*****\n1 = Comedy\n2 = Action\n3 = Family\n4 = Drama\n");
+//		assertEquals("wrong number of video", 
+//				numVideo, 
+//				this._loadVideoBL.getSearchByCategoryListOfVideos(Categories.values()[Integer.valueOf(inputCategory) - 1]).size());
+//	}
 	
 	public VideoSystem() {
-//		SQLAdapter sqlAdapter = new SQLAdapter();
-//		sqlAdapter.sqlConnect();
+		SQLAdapter sqlAdapter = SQLAdapter.getInstance();
+		try {
+			if (sqlAdapter.sqlConnect()) {
+				_loginBL = new LoginEventListener(this);
+				_loadVideoBL = new LoadVideoEventListener(this);
+			}
+		
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		
+		}
 
 //		this.testLogin();
 //		this.testShowInformationOfAdmin();
@@ -99,8 +108,12 @@ public class VideoSystem extends JFrame {
 		} else if (_typeUser == TypeUser.TypeUserCustomer) {
 			System.out.println("show customer page");
 			
+		} else if (_typeUser == TypeUser.TypeUserIncorrectPassoword) {
+			System.out.println("Incorrect password!!!");
+			validateUser();
+		
 		} else {
-			System.out.println("no user");
+			System.out.println("Invalid username!!!");
 			validateUser();
 		}
 	}
@@ -114,11 +127,66 @@ public class VideoSystem extends JFrame {
 			if (inputOption.equals("1")) {
 				System.out.println(this._loginBL.getCurrentClerk().toString());
 			} else if (inputOption.equals("2")) {
-				String promptFunction = "*****Function*****\n1 = Add customer\n2 = Add video\n3 = Checkout video\n4 = Check return video\n";
+				String promptFunction = "*****Function*****\n1 = Add customer\n2 = Add video\n3 = Checkout video\n4 = Check return video\n5 = Show all videos\n";
 				if (_typeUser == TypeUser.TypeUserAdmin)
-					promptFunction += "5 = Communicate with customer";
+					promptFunction += "6 = Communicate with customer\n";
 				
 				String inputFunction = this.getUserInputByShowingMessage(promptFunction);
+				
+				//add customer
+				if (inputFunction.equals("1")) {
+					//insert into VIDEO values (001, 'Batman', 1.00, 'Adventure', 7, 2000, 5.00);
+					//CustID | name    | address  | email | Custel | rating | password
+					String inputName = this.getUserInputByShowingMessage("Name : ");
+					String inputAddress = this.getUserInputByShowingMessage("Address : ");
+					String inputEmail = this.getUserInputByShowingMessage("Email : ");
+					String inputTel = this.getUserInputByShowingMessage("Tel : ");
+					String inputRating = this.getUserInputByShowingMessage("Rating[1:Standard, 2:Premium] : ");
+					String inputPassword = this.getUserInputByShowingMessage("Password : ");
+					String inputConfirmPassword = this.getUserInputByShowingMessage("Re-Password : ");
+					if (inputPassword.equals(inputConfirmPassword)) {
+						if (this._loginBL.addCustomer(inputName, inputAddress, inputEmail, inputTel, inputRating, inputPassword)) {
+							System.out.println("Add customer successfully!!!");
+						} else {
+							System.out.println("Add customer unsuccessfully!!!");
+						}
+					}
+					
+				// Add video
+				} else if (inputFunction.equals("2")) {
+//					String inputTitle = this.getUserInputByShowingMessage("Title : ");
+//					String inputRentalCharge = this.getUserInputByShowingMessage("RentalCharge : ");
+//					String inputCat = this.getUserInputByShowingMessage("Category[1:Comedy, 2:Action, 3:Family, 4:Drama] : ");
+//					Categories category;
+//					//Comedy, Action, Family, Drama
+//					if (inputCat.equals("1"))
+//						category = Categories.Comedy;
+//					else if (inputCat.equals("2"))
+//						category = Categories.Action;
+//					else if (inputCat.equals("3"))
+//						category = Categories.Family;
+//					else
+//						category = Categories.Drama;
+//					
+//					String inputPeriod = this.getUserInputByShowingMessage("Period : ");
+//					String inputYear = this.getUserInputByShowingMessage("Year release : ");
+//					String inputOverdueCharge = this.getUserInputByShowingMessage("Overdue charge : ");
+//					
+//					boolean isAdded = this._loadVideoBL.addVideo(inputTitle, 
+//							Float.parseFloat(inputRentalCharge),
+//							category,  
+//							Integer.parseInt(inputPeriod),  
+//							inputYear, 
+//							Float.parseFloat(inputOverdueCharge), 
+//							null);
+//					if (isAdded)
+//						System.out.println("Add Successfully");
+//					
+//					this.presentOption();
+				} else if (inputFunction.equals("5")) {
+					this.showListOfVideos(this._loadVideoBL.getListOfVideos());
+					this.presentOption();
+				}
 				System.out.println(inputFunction);
 			}
 		}
@@ -173,7 +241,7 @@ public class VideoSystem extends JFrame {
 				scannerInput = new Scanner(System.in);
 				
 			System.out.print(aMessage);
-			input = scannerInput.next();
+			input = scannerInput.nextLine();
 			return input;
 		}
 		catch (NumberFormatException aEx) {

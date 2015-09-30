@@ -2,11 +2,14 @@ package controller;
 
 import model.Customer;
 import model.Clerk;
+import utilities.SQLAdapter;
 import view.VideoSystem;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class LoginEventListener implements ActionListener {
@@ -18,7 +21,7 @@ public class LoginEventListener implements ActionListener {
 	private Clerk _currentClerk;
 	
 	public enum TypeUser {
-		TypeUserCustomer, TypeUserClerk, TypeUserAdmin, TypeUserNone;
+		TypeUserCustomer, TypeUserClerk, TypeUserAdmin, TypeUserNone, TypeUserIncorrectPassoword;
 	}
 	
 	public TypeUser typeUser;
@@ -27,37 +30,52 @@ public class LoginEventListener implements ActionListener {
 		super();
 		this._videoSystem = aSystem;
 		
-		//for testing
-		//need to get this information from database
-		Clerk admin = new Clerk();
-		admin.init("champ_admin", "18 Footscray", "admin@student.rmit.edu.au", 0406124465, true);
-		this._mClerk.put(admin.getName(), admin);
-		
-		Clerk notAdmin = new Clerk();
-		notAdmin.init("champ_noAdmin", "18 Footscray", "not_admin@student.rmit.edu.au", 0406124465, false);
-		this._mClerk.put(notAdmin.getName(), notAdmin);
-		
-		Customer customer = new Customer();
-		customer.init(1, "champ_customer", "18 Footscray", "customer@student.rmit.edu.au", 0406124465, true);
-		this._mCustomer.put(customer.getName(), customer);
+		SQLAdapter sqlAdapter = SQLAdapter.getInstance();
+		this.loadClerk(sqlAdapter);
+		this.loadCustomer(sqlAdapter);
 	}
 	
 	public TypeUser verifyLogin(String aUsername, String aPassword) {
-		String pass_ = "123";
-//		String verifyUser;		
+		System.out.println(this._mCustomer);
 		if (this._mCustomer.containsKey(aUsername)) {
 			this._currentCustomer = this._mCustomer.get(aUsername);
-			if (aPassword.equals(pass_)) {
+			if (aPassword.equals(this._currentCustomer.getPassword())) {
 				return TypeUser.TypeUserCustomer;
 			}
+			this._currentCustomer = null;
+			return TypeUser.TypeUserIncorrectPassoword;
 		}
 		if (this._mClerk.containsKey(aUsername)) {
-			if (aPassword.equals(pass_)) {
-				this._currentClerk = this._mClerk.get(aUsername);
+			this._currentClerk = this._mClerk.get(aUsername);
+			if (aPassword.equals(this._currentClerk.getPassword())) {				
 				return this._currentClerk.isAdmin()? TypeUser.TypeUserAdmin : TypeUser.TypeUserClerk; 
-			} 
+			}
+			this._currentClerk = null;
+			return TypeUser.TypeUserIncorrectPassoword;
 		}
 		return TypeUser.TypeUserNone;
+	}
+
+	public boolean addCustomer(String aName, String aAddress, String aEmail, String aTel, String aRating, String aPassword) {
+		//insert into CUSTOMER values (001, 'Max', '1 Truganini Melbourrne', 'max123@gmail.com', '03123456', 'S');
+		SQLAdapter sqlAdapter = SQLAdapter.getInstance();
+		int custID = this._mCustomer.size() + 1;
+		String rating = aRating;
+		rating = rating.replace("1", "S");
+		rating = rating.replace("2", "P");
+
+		List<Object> objects = new ArrayList<Object>();
+		objects.add(custID);
+		objects.add(aName);
+		objects.add(aAddress);
+		objects.add(aEmail);
+		objects.add(aTel);
+		objects.add(rating);
+		objects.add(aPassword);
+		
+		if (sqlAdapter.insertRow("INSERT INTO CUSTOMER VALUES (?, ?, ?, ?, ?, ?, ?)", objects))
+			return true;
+		return false;
 	}
 	
 	public Clerk getCurrentClerk() {
@@ -66,6 +84,44 @@ public class LoginEventListener implements ActionListener {
 	
 	public Customer getCurrentCustomer() {
 		return this._currentCustomer;
+	}
+
+	private void loadClerk(SQLAdapter aSQLAdapter) {
+		this._mClerk.clear();
+		String[] mappingClerk = {"AdminID", "name", "address", "email", "admintel", "isAdmin", "password"};
+		
+		ArrayList<Map<String, String>> dataList = aSQLAdapter.getData(mappingClerk, "select * from ADMIN");
+		for (Map<String, String> mapClerk : dataList) {
+			Clerk clerk = new Clerk();
+			clerk.init(Integer.parseInt(mapClerk.get("AdminID")), 
+					mapClerk.get("isAdmin").equals("0")? false : true, 
+					mapClerk.get("name"), 
+					mapClerk.get("address"),  
+					mapClerk.get("email"),  
+					mapClerk.get("admintel"),  
+					mapClerk.get("password"));
+			if (clerk != null)
+				this._mClerk.put(clerk.getName(), clerk);
+		}
+		System.out.println(this._mClerk);
+	}
+	
+	private void loadCustomer(SQLAdapter aSQLAdapter) {
+		this._mCustomer.clear();
+		String[] mappingCustomer = {"CustID", "name", "address", "email", "Custel", "rating", "password"};
+		ArrayList<Map<String, String>> dataList = aSQLAdapter.getData(mappingCustomer, "select * from CUSTOMER");
+		for (Map<String, String> mapCustomer : dataList) {
+			Customer customer = new Customer(); 
+			customer.init(Integer.parseInt(mapCustomer.get("CustID")), 
+					mapCustomer.get("name"), 
+					mapCustomer.get("address"),  
+					mapCustomer.get("email"),  
+					mapCustomer.get("Custel"), 
+					mapCustomer.get("rating"),
+					mapCustomer.get("password"));
+			if (customer != null)
+				_mCustomer.put(customer.getName(), customer);
+		}
 	}
 	
 	@Override

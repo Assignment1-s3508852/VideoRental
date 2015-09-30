@@ -5,15 +5,18 @@ public class Customer {
 	private String name;
 	private String address;
 	private String email;
-	private int telNo;
+	private String custTel;
+	private String password;
 	private boolean rating = false;
 	
-	public void init(int aCustID, String aName, String aAddress, String aEmail, int aTel, boolean aRating) {
+	public void init(int aCustID, String aName, String aAddress, String aEmail, String aTel, String aPremium, String aPassword) {
+		this.customerID = aCustID;
 		this.name = aName;
 		this.address = aAddress;
 		this.email = aEmail;
-		this.telNo = aTel;
-		this.rating = aRating;
+		this.custTel = aTel;
+		this.rating = (aPremium.equals("S"))? false : true;
+		this.password = aPassword;
 	}
 	
 	public int getCustomerID() {
@@ -40,14 +43,6 @@ public class Customer {
 		this.address = address;
 	}
 
-	public int getTelNo() {
-		return telNo;
-	}
-
-	public void setTelNo(int telNo) {
-		this.telNo = telNo;
-	}
-
 	public boolean isRating() {
 		return rating;
 	}
@@ -64,7 +59,23 @@ public class Customer {
 		this.email = email;
 	}
 	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+	public String getCustTel() {
+		return custTel;
+	}
+
+	public void setCustTel(String custTel) {
+		this.custTel = custTel;
+	}
+	
 	public String toString() {
-		return "name : " + name + "\n" + "admin : " + (rating? "Yes" : "No") + "\n" + "address : " + address + "\n" + "email : " + email + "\n" + "tel : " + Integer.toString(telNo);	
+		return "name : " + name + "\n" + "premium : " + (rating? "Yes" : "No") + "\n" + "address : " + address + "\n" + "email : " + email + "\n" + "tel : " + this.custTel;	
 	}
 }

@@ -1,21 +1,25 @@
 package controller;
 
+import utilities.SQLAdapter;
 import view.VideoSystem;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import model.Video;
+import model.VideoCopy;
 import model.Video.Categories;
 
 public class LoadVideoEventListener implements ActionListener {
 	VideoSystem _videoSystem;
 	private Map<String, Video> _mVideo = new HashMap<String, Video>();
 	
-	public LoadVideoEventListener(VideoSystem aSystem) {
+	public LoadVideoEventListener(VideoSystem aSystem) { 
 		super();
+		/*
 		Video video1 = new Video();
 		video1.init(1, "XXX", 100, Video.Categories.Comedy, 10, "2004", 10, null);
 		
@@ -28,6 +32,24 @@ public class LoadVideoEventListener implements ActionListener {
 		_mVideo.put(Integer.toString(video1.getVideoID()), video1);
 		_mVideo.put(Integer.toString(video2.getVideoID()), video2);
 		_mVideo.put(Integer.toString(video3.getVideoID()), video3);
+		/*/
+		SQLAdapter sqlAdapter = SQLAdapter.getInstance();
+		String[] mappingList = {"videoID", "title", "rentalcharge", "category", "rentalperiod", "yearrelease", "charge"};
+
+		ArrayList<Map<String, String>> dataList = sqlAdapter.getData(mappingList, "select * from VIDEO");
+		for (Map<String, String> mapVideo : dataList) {
+			Video video = new Video();
+			video.init(Integer.parseInt(mapVideo.get("videoID")), 
+					mapVideo.get("title"), 
+					Float.parseFloat(mapVideo.get("rentalcharge")), 
+					Categories.valueOf(mapVideo.get("category")), 
+					Integer.parseInt(mapVideo.get("rentalperiod")), 
+					mapVideo.get("yearrelease"), 
+					Float.parseFloat(mapVideo.get("charge")), 
+					null);
+			if (video != null)
+				_mVideo.put(Integer.toString(video.getVideoID()), video);
+		}
 	}
 	
 	public Map<String, Video> getListOfVideos() {
@@ -54,6 +76,13 @@ public class LoadVideoEventListener implements ActionListener {
 			}
 		}
 		return mVideoSearched;
+	}
+	
+	public boolean addVideo(String aTitle, float aRentalCharge, Categories aCategories, int aRentPeriod, String aYearRelease, float aOverdueCharge, VideoCopy aVideoCopy) {
+		Video video = new Video();
+		video.init(this._mVideo.size() + 1, aTitle, aRentalCharge, aCategories, aRentPeriod, aYearRelease, aOverdueCharge, aVideoCopy);
+		_mVideo.put(Integer.toString(video.getVideoID()), video);
+		return true;
 	}
 	
 	@Override

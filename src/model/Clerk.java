@@ -1,26 +1,24 @@
 package model;
 
 public class Clerk {
-	private boolean admin = false;
+	private int AdminID;
+	private boolean isAdmin = false;
 	private String name;
 	private String address;
 	private String email;
-	private int tel;
+	private String adminTel;
+	private String password;
 	
-	public void init(String aName, String aAddress, String aEmail, int aTel, boolean aIsAdmin) {
+	public void init(int aAdminID, boolean aAdmin, String aName, String aAddress, String aEmail, String aTel, String aPassword) {
+		this.AdminID = aAdminID;
+		this.isAdmin = aAdmin;
 		this.name = aName;
 		this.address = aAddress;
 		this.email = aEmail;
-		this.tel = aTel;
-		this.admin = aIsAdmin;
+		this.adminTel = aTel;
+		this.password = aPassword;
 	}
 	
-	public boolean isAdmin() {
-		return admin;
-	}
-	public void setAdmin(boolean admin) {
-		this.admin = admin;
-	}
 	public String getName() {
 		return name;
 	}
@@ -39,13 +37,40 @@ public class Clerk {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public int getTel() {
-		return tel;
+
+	public int getAdminID() {
+		return AdminID;
 	}
-	public void setTel(int tel) {
-		this.tel = tel;
+
+	public void setAdminID(int adminID) {
+		AdminID = adminID;
 	}
+
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
 	public String toString() {
-		return "name : " + name + "\n" + "admin : " + (admin? "Yes" : "No") + "\n" + "address : " + address + "\n" + "email : " + email + "\n" + "tel : " + Integer.toString(tel);
+		return "name : " + name + "\n" + "admin : " + (this.isAdmin? "Yes" : "No") + "\n" + "address : " + address + "\n" + "email : " + email + "\n" + "tel : " + this.adminTel;
+	}
+
+	public String getAdminTel() {
+		return adminTel;
+	}
+
+	public void setAdminTel(String adminTel) {
+		this.adminTel = adminTel;
 	}
 }
