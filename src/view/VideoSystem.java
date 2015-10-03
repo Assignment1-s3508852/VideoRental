@@ -3,16 +3,16 @@ package view;
 import controller.LoginEventListener;
 import controller.LoginEventListener.TypeUser;
 import controller.LoadVideoEventListener;
+import controller.CheckVideoEventListener;
 
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.Scanner;
 
 import javax.swing.JFrame;
 
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
+import model.ObjectEvent;
 import model.Video;
 import model.Video.Categories;
 import utilities.SQLAdapter;
@@ -23,6 +23,7 @@ public class VideoSystem extends JFrame {
 	
 	private LoginEventListener _loginBL = null;
 	private LoadVideoEventListener _loadVideoBL = null; 
+	private CheckVideoEventListener _checkVideo = null;
 	
 	TypeUser _typeUser;
 	
@@ -78,6 +79,7 @@ public class VideoSystem extends JFrame {
 			if (sqlAdapter.sqlConnect()) {
 				_loginBL = new LoginEventListener(this);
 				_loadVideoBL = new LoadVideoEventListener(this);
+				_checkVideo = new CheckVideoEventListener();
 			}
 		
 		} catch (ClassNotFoundException e) {
@@ -238,7 +240,15 @@ public class VideoSystem extends JFrame {
 				//Rent video
 				} else if (inputFunction.equals("4")) {
 					String inputVideoID = this.getUserInputByShowingMessage("Which videoID : ");
-					System.out.println(inputVideoID);
+					ObjectEvent objEvent =  this._loadVideoBL.getVideoCopyFromVideoID(inputVideoID);
+					if (objEvent.isSuccessful) {
+						boolean isRent = this._checkVideo.rentVideo((Video)objEvent.objResult);
+						if (isRent)
+							System.out.println("rent succesfully");
+					} else {
+						System.out.println(objEvent.resultMessage);
+					}
+					this.presentOption();
 				}
 			}
 		}

@@ -13,9 +13,9 @@ import com.mysql.jdbc.PreparedStatement;
 
 public class SQLAdapter {
 	private static SQLAdapter instance = null;
-	protected SQLAdapter() {
-		//Exists only to defeat instantiation.
-	}
+//	protected SQLAdapter() {
+//		//Exists only to defeat instantiation.
+//	}
 	public static SQLAdapter getInstance() {
 		if(instance == null) {
 			instance = new SQLAdapter();
@@ -84,7 +84,7 @@ public class SQLAdapter {
 		}
 	}
 	
-	public boolean insertRow(String aQueryString, List<Object> aObjects) {
+	public boolean insertIntoTable(String aQueryString, List<Object> aObjects) {
 		try {
 	        PreparedStatement statement = (PreparedStatement)connection.prepareStatement(aQueryString);
 			for (int i = 0; i < aObjects.size(); i++) {
@@ -101,7 +101,20 @@ public class SQLAdapter {
 		}
 	}
 	
-	public boolean updateTable() {
-		return true;
+	public boolean updateTable(String aQueryString, List<Object> aObjects) {
+		try {
+	        PreparedStatement statement = (PreparedStatement)connection.prepareStatement(aQueryString);
+			for (int i = 0; i < aObjects.size(); i++) {
+				System.out.println(aObjects.get(i));
+				statement.setObject(i + 1, aObjects.get(i));
+			}
+			statement.executeUpdate();	
+			return true;
+		
+		} catch (SQLException aEx) {
+			System.out.println(aEx.getMessage());
+			aEx.printStackTrace();
+			return false;
+		}
 	}
 }

@@ -12,6 +12,7 @@ import java.util.Map;
 import model.Video;
 import model.VideoCopy;
 import model.Video.Categories;
+import model.ObjectEvent;
 
 public class LoadVideoEventListener implements ActionListener {
 	VideoSystem _videoSystem;
@@ -76,6 +77,54 @@ public class LoadVideoEventListener implements ActionListener {
 			}
 		}
 		return mVideoSearched;
+	}
+	
+	public ObjectEvent getVideoCopyFromVideoID(String aVideoID) {
+		Video videoSelected = this._mVideo.get(aVideoID); 
+		
+		SQLAdapter sqlAdapter = SQLAdapter.getInstance();
+		String[] mappingList = {"copyID", "datePurchase", "available", "damage", "noOfRent", "videoID"};
+
+		ArrayList<Map<String, String>> dataList = sqlAdapter.getData(mappingList, "SELECT * FROM VIDEO_COPY WHERE videoID = " + aVideoID);
+		
+		VideoCopy copy = new VideoCopy();
+
+		ObjectEvent objEvent = new ObjectEvent(); 
+		objEvent.resultMessage = "no item";
+		
+		for (Map<String, String> mapVideo_Copy : dataList) {
+			boolean isAvailable = mapVideo_Copy.get("available").equals("1")? true : false;
+			boolean isDamaged = mapVideo_Copy.get("damage").equals("1")? true : false;
+			int noOfRent = Integer.parseInt(mapVideo_Copy.get("noOfRent"));
+			int copyID = Integer.parseInt(mapVideo_Copy.get("copyID"));
+			videoSelected.setVideoCopy(copy);
+			
+			copy.init(copyID, mapVideo_Copy.get("datePurchase"), isDamaged, isAvailable, noOfRent);
+			
+			//check for available
+			if (isAvailable) {
+				//check for damage
+				if (!isDamaged) {
+					//check for over rental
+					if (noOfRent < 100) {
+						objEvent.isSuccessful = true;
+						objEvent.objResult = videoSelected;
+						return objEvent;
+
+					} else {
+						objEvent.resultMessage = "item is over rental";
+						continue;
+					}
+				} else {
+					objEvent.resultMessage = "item is damaged";
+					continue;
+				}
+			} else {
+				objEvent.resultMessage = "item unavailable";
+				continue;
+			}
+		}
+		return objEvent;
 	}
 	
 	public boolean addVideo(String aTitle, float aRentalCharge, Categories aCategories, int aRentPeriod, String aYearRelease, float aOverdueCharge, VideoCopy aVideoCopy) {

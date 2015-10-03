@@ -3,10 +3,12 @@ package model;
 import java.util.Date;
 
 public class TransactionCopy {
+	//| copyID | dateDue | status | dateReturn | rentalCharged |
 	private Date dateDue;
 	private Date dateReturn;
 	private float rentalCharge;
-	private boolean active;
+	private char status;
+	
 	public Date getDateDue() {
 		return dateDue;
 	}
@@ -25,10 +27,10 @@ public class TransactionCopy {
 	public void setRentalCharge(float rentalCharge) {
 		this.rentalCharge = rentalCharge;
 	}
-	public boolean isActive() {
-		return active;
+	public char getStatus() {
+		return status;
 	}
-	public void setActive(boolean active) {
-		this.active = active;
+	public void setStatus(char status) {
+		this.status = status;
 	}
 }

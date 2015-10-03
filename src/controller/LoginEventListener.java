@@ -73,7 +73,7 @@ public class LoginEventListener implements ActionListener {
 		objects.add(rating);
 		objects.add(aPassword);
 		
-		if (sqlAdapter.insertRow("INSERT INTO CUSTOMER VALUES (?, ?, ?, ?, ?, ?, ?)", objects))
+		if (sqlAdapter.insertIntoTable("INSERT INTO CUSTOMER VALUES (?, ?, ?, ?, ?, ?, ?)", objects))
 			return true;
 		return false;
 	}

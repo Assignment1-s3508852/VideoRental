@@ -3,39 +3,57 @@ package model;
 import java.util.Date;
 
 public class VideoCopy {
-	private int unitID;
-	private Date datePurchased;
-	private boolean damaged;
+	private int copyID;
+	private String datePurchase;
+	private boolean damage;
 	private boolean availale;
-	private int noOfTimeRented;
-	public int getUnitID() {
-		return unitID;
+	private int noOfRent;
+
+	public void init(int aCopyID, String aDatePurchase, boolean aDamage, boolean aAvailale, int aNoOfRent) {
+		this.copyID = aCopyID;
+		this.datePurchase = aDatePurchase;
+		this.damage = aDamage;
+		this.availale = aAvailale;
+		this.noOfRent = aNoOfRent;
 	}
-	public void setUnitID(int unitID) {
-		this.unitID = unitID;
+
+	public int getCopyID() {
+		return copyID;
 	}
-	public Date getDatePurchased() {
-		return datePurchased;
+
+	public void setCopyID(int copyID) {
+		this.copyID = copyID;
 	}
-	public void setDatePurchased(Date datePurchased) {
-		this.datePurchased = datePurchased;
+
+	public String getDatePurchase() {
+		return datePurchase;
 	}
+
+	public void setDatePurchase(String datePurchase) {
+		this.datePurchase = datePurchase;
+	}
+
+	public boolean isDamage() {
+		return damage;
+	}
+
+	public void setDamage(boolean damage) {
+		this.damage = damage;
+	}
+
 	public boolean isAvailale() {
 		return availale;
 	}
+
 	public void setAvailale(boolean availale) {
 		this.availale = availale;
 	}
-	public boolean isDamaged() {
-		return damaged;
+
+	public int getNoOfRent() {
+		return noOfRent;
 	}
-	public void setDamaged(boolean damaged) {
-		this.damaged = damaged;
-	}
-	public int getNoOfTimeRented() {
-		return noOfTimeRented;
-	}
-	public void setNoOfTimeRented(int noOfTimeRented) {
-		this.noOfTimeRented = noOfTimeRented;
+
+	public void setNoOfRent(int noOfRent) {
+		this.noOfRent = noOfRent;
 	}
 }
