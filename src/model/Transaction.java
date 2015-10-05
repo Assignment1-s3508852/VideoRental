@@ -1,24 +1,40 @@
 package model;
 
-import java.util.Date;
-
 public class Transaction {
-	private int transactionID;
-	protected Date rentalDate;
+	private int transacID;
+	protected String rentaldate;
+	protected int custID;
+	private boolean reviewed;
 	
-	public int getTransactionID() {
-		return transactionID;
+	public void init(int aTransacID, String aRentaldate, int aCustID, String aReviewed) {
+		this.transacID = aTransacID;
+		this.rentaldate = aRentaldate;
+		this.custID = aCustID;
+		this.reviewed = aReviewed.equals("0")? false : true;
 	}
 	
-	public void setTransactionID(int transactionID) {
-		this.transactionID = transactionID;
+	public int getTransacID() {
+		return transacID;
 	}
-	
-	public Date getRentalDate() {
-		return rentalDate;
+	public void setTransacID(int transacID) {
+		this.transacID = transacID;
 	}
-	
-	public void setRentalDate(Date rentalDate) {
-		this.rentalDate = rentalDate;
+	public boolean isReviewed() {
+		return reviewed;
+	}
+	public void setReviewed(boolean reviewed) {
+		this.reviewed = reviewed;
+	}
+	public String getRentaldate() {
+		return this.rentaldate;
+	}
+	public void setRentaldate(String aRentaldate) {
+		this.rentaldate = aRentaldate;
+	}
+	public int getCustID() {
+		return this.custID;
+	}
+	public void setCustID(int aCustID) {
+		this.custID = aCustID;
 	}
 }

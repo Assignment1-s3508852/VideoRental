@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 
 import org.junit.Test;
 
+import model.Customer;
 import model.ObjectEvent;
 import model.Video;
 import model.Video.Categories;
@@ -128,6 +129,7 @@ public class VideoSystem extends JFrame {
 		if (_typeUser == TypeUser.TypeUserAdmin || _typeUser == TypeUser.TypeUserClerk) {
 			if (inputOption.equals("1")) {
 				System.out.println(this._loginBL.getCurrentClerk().toString());
+			
 			} else if (inputOption.equals("2")) {
 				String promptFunction = "*****Function*****\n1 = Add customer\n2 = Add video\n3 = Checkout video\n4 = Check return video\n5 = Show all videos\n";
 				if (_typeUser == TypeUser.TypeUserAdmin)
@@ -147,8 +149,12 @@ public class VideoSystem extends JFrame {
 					String inputPassword = this.getUserInputByShowingMessage("Password : ");
 					String inputConfirmPassword = this.getUserInputByShowingMessage("Re-Password : ");
 					if (inputPassword.equals(inputConfirmPassword)) {
-						if (this._loginBL.addCustomer(inputName, inputAddress, inputEmail, inputTel, inputRating, inputPassword)) {
+						if (this._loginBL.addCustomer(inputName, inputAddress, inputEmail, inputTel, inputRating, inputPassword)) {							
 							System.out.println("Add customer successfully!!!");
+							if (inputRating.equals("1"))
+								System.out.println("Standard type -- $50 must be pay for joining fee");
+							else
+								System.out.println("Premium type -- 10% will be discount for every movie rental");
 						} else {
 							System.out.println("Add customer unsuccessfully!!!");
 						}
@@ -239,14 +245,23 @@ public class VideoSystem extends JFrame {
 				
 				//Rent video
 				} else if (inputFunction.equals("4")) {
-					String inputVideoID = this.getUserInputByShowingMessage("Which videoID : ");
-					ObjectEvent objEvent =  this._loadVideoBL.getVideoCopyFromVideoID(inputVideoID);
-					if (objEvent.isSuccessful) {
-						boolean isRent = this._checkVideo.rentVideo((Video)objEvent.objResult);
-						if (isRent)
-							System.out.println("rent succesfully");
-					} else {
-						System.out.println(objEvent.resultMessage);
+					String inputNoOfVideoRent = this.getUserInputByShowingMessage("No of video rent : ");
+					for (int i = 0; i < Integer.parseInt(inputNoOfVideoRent); i++) {
+						String inputVideoID = this.getUserInputByShowingMessage("Which videoID : ");
+						ObjectEvent objEvent =  this._loadVideoBL.getVideoCopyFromVideoID(inputVideoID);
+						if (objEvent.isSuccessful) {
+							Video video = (Video)objEvent.objResult;
+							boolean isRent = this._checkVideo.rentVideo(video);
+							if (isRent) {
+								//create transaction with uniqueID (custID)
+								Customer customer = this._loginBL.getCurrentCustomer();
+								boolean isTransactionCreated = this._checkVideo.createTransaction(customer, video);								
+								if (isTransactionCreated)
+									System.out.println("rent succesfully");						
+							}
+						} else {
+							System.out.println(objEvent.resultMessage);
+						}
 					}
 					this.presentOption();
 				}
