@@ -51,6 +51,7 @@ public class CheckVideoEventListener implements ActionListener {
 	public ObjectEvent checkoutVideo(Transaction aTransaction, Map<String, VideoCopy> aVideoCopys, Map<String, Video> aVideos) {
 		ObjectEvent event = new ObjectEvent();
 		event.isSuccessful = false;
+		event.resultMessage = "";
 		
 		SQLAdapter sqlAdapter = SQLAdapter.getInstance();
 		int transacID = aTransaction.getTransacID();
@@ -142,6 +143,8 @@ public class CheckVideoEventListener implements ActionListener {
 				
 		ObjectEvent event = new ObjectEvent(); 
 		event.isSuccessful = false;
+		event.resultMessage = "";
+		
 		SQLAdapter adapter = SQLAdapter.getInstance();
 		//check if damage
 		if (aDamaged.equals("2")) {

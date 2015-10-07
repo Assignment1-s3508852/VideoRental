@@ -5,7 +5,10 @@ import view.VideoSystem;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,7 +100,8 @@ public class LoadVideoEventListener implements ActionListener {
 				boolean isDamaged = videoCopy.isDamage();
 				int noOfRent = videoCopy.getNoOfRent();
 				videoSelected.setVideoCopy(videoCopy);
-				
+				objEvent.objResult = videoSelected;
+
 				//check for available
 				if (isAvailable) {
 					//check for damage
@@ -105,7 +109,6 @@ public class LoadVideoEventListener implements ActionListener {
 						//check for over rental
 						if (noOfRent < 100) {
 							objEvent.isSuccessful = true;
-							objEvent.objResult = videoSelected;
 							return objEvent;
 
 						} else {
@@ -125,11 +128,42 @@ public class LoadVideoEventListener implements ActionListener {
 		return objEvent;
 	}
 	
-	public boolean addVideo(String aTitle, float aRentalCharge, Categories aCategories, int aRentPeriod, String aYearRelease, float aOverdueCharge, VideoCopy aVideoCopy) {
-		Video video = new Video();
-		video.init(this._mVideo.size() + 1, aTitle, aRentalCharge, aCategories, aRentPeriod, aYearRelease, aOverdueCharge, aVideoCopy);
-		_mVideo.put(Integer.toString(video.getVideoID()), video);
-		return true;
+	public ObjectEvent addVideo(String aTitle, float aRentalCharge, Categories aCategories, int aRentPeriod, String aYearRelease, float aOverdueCharge, String aNoOfCopy) {
+		SQLAdapter sqlAdapter = SQLAdapter.getInstance();
+		List<Object> objVideo = new ArrayList<Object>();
+		objVideo.add(this._mVideo.size() + 1);
+		objVideo.add(aTitle);
+		objVideo.add(aRentalCharge);
+		objVideo.add(String.valueOf(aCategories));
+		objVideo.add(aRentPeriod);
+		objVideo.add(aYearRelease);
+		objVideo.add(aOverdueCharge);
+		
+		ObjectEvent event = new ObjectEvent(); 
+		event.isSuccessful = false;
+		event.resultMessage = "";
+		if (sqlAdapter.insertIntoTable("INSERT INTO VIDEO VALUES (?, ?, ?, ?, ?, ?, ?)", objVideo)) {
+			event.isSuccessful = true;
+			event.resultMessage += aTitle + " is added\n" + aNoOfCopy + " copies are added succussfully.";
+			this.loadVideo(sqlAdapter);
+			int iNoOfCopy = Integer.parseInt(aNoOfCopy);
+			for (int i = 0; i < iNoOfCopy; i++) {
+				List<Object> objVideoCopy = new ArrayList<Object>();
+				objVideoCopy.add(this._mVideoCopy.size() + 1);
+				
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				Date date = new Date();
+				objVideoCopy.add(dateFormat.format(date));
+				objVideoCopy.add(true);
+				objVideoCopy.add(false);
+				objVideoCopy.add(0);
+				objVideoCopy.add(this._mVideo.size());
+				if (sqlAdapter.insertIntoTable("INSERT INTO VIDEO_COPY VALUES (?, ?, ?, ?, ?, ?)", objVideoCopy)) {
+					this.loadVideoCopy(sqlAdapter);
+				}
+			}	
+		}
+		return event;
 	}
 	
 	public boolean rentVideo(Video aVideo) {		
@@ -145,6 +179,7 @@ public class LoadVideoEventListener implements ActionListener {
 	}
 
 	private void loadVideo(SQLAdapter aAdapter) {
+		this._mVideo.clear();
 		String[] mappingVideoList = {"videoID", "title", "rentalcharge", "category", "rentalperiod", "yearrelease", "charge"};
 
 		ArrayList<Map<String, String>> dataVideoList = aAdapter.getData(mappingVideoList, "select * from VIDEO");
@@ -159,11 +194,12 @@ public class LoadVideoEventListener implements ActionListener {
 					Float.parseFloat(mapVideo.get("charge")), 
 					null);
 			if (video != null)
-				_mVideo.put(Integer.toString(video.getVideoID()), video);
+				this._mVideo.put(Integer.toString(video.getVideoID()), video);
 		}
 	}
 	
 	private void loadVideoCopy(SQLAdapter aAdapter) {
+		this._mVideoCopy.clear();
 		String[] mappingVideoCopyList = {"copyID", "datePurchase", "available", "damage", "noOfRent", "videoID"};
 
 		ArrayList<Map<String, String>> dataVideoCopyList = aAdapter.getData(mappingVideoCopyList, "SELECT * FROM VIDEO_COPY");

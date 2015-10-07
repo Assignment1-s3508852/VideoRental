@@ -163,40 +163,38 @@ public class VideoSystem extends JFrame {
 							System.out.println("Add customer unsuccessfully!!!");
 						}
 					}
+					this.presentOption();
 					
 				//add video
-				} else if (inputFunction.equals("2")) {
-					//Assign to Frank					
+				} else if (inputFunction.equals("2")) {					
+					String inputTitle = this.getUserInputByShowingMessage("Title : ");
+					String inputRentalCharge = this.getUserInputByShowingMessage("RentalCharge : ");
+					String inputCat = this.getUserInputByShowingMessage("Category[1:Comedy, 2:Action, 3:Family, 4:Drama] : ");
+					Categories category;
+					//Comedy, Action, Family, Drama
+					if (inputCat.equals("1"))
+						category = Categories.Comedy;
+					else if (inputCat.equals("2"))
+						category = Categories.Action;
+					else if (inputCat.equals("3"))
+						category = Categories.Family;
+					else
+						category = Categories.Drama;
 					
-//					String inputTitle = this.getUserInputByShowingMessage("Title : ");
-//					String inputRentalCharge = this.getUserInputByShowingMessage("RentalCharge : ");
-//					String inputCat = this.getUserInputByShowingMessage("Category[1:Comedy, 2:Action, 3:Family, 4:Drama] : ");
-//					Categories category;
-//					//Comedy, Action, Family, Drama
-//					if (inputCat.equals("1"))
-//						category = Categories.Comedy;
-//					else if (inputCat.equals("2"))
-//						category = Categories.Action;
-//					else if (inputCat.equals("3"))
-//						category = Categories.Family;
-//					else
-//						category = Categories.Drama;
-//					
-//					String inputPeriod = this.getUserInputByShowingMessage("Period : ");
-//					String inputYear = this.getUserInputByShowingMessage("Year release : ");
-//					String inputOverdueCharge = this.getUserInputByShowingMessage("Overdue charge : ");
-//					
-//					boolean isAdded = this._loadVideoBL.addVideo(inputTitle, 
-//							Float.parseFloat(inputRentalCharge),
-//							category,  
-//							Integer.parseInt(inputPeriod),  
-//							inputYear, 
-//							Float.parseFloat(inputOverdueCharge), 
-//							null);
-//					if (isAdded)
-//						System.out.println("Add Successfully");
-//					
-//					this.presentOption();
+					String inputPeriod = this.getUserInputByShowingMessage("Period : ");
+					String inputYear = this.getUserInputByShowingMessage("Year release : ");
+					String inputOverdueCharge = this.getUserInputByShowingMessage("Overdue charge : ");
+					String inputNoOfCopy = this.getUserInputByShowingMessage("No. of copy : ");
+					
+					ObjectEvent event = this._loadVideoBL.addVideo(inputTitle, 
+							Float.parseFloat(inputRentalCharge),
+							category,  
+							Integer.parseInt(inputPeriod),  
+							inputYear, 
+							Float.parseFloat(inputOverdueCharge), 
+							inputNoOfCopy);
+					System.out.println(event.resultMessage);
+					this.presentOption();
 				
 				//checkout video
 				} else if (inputFunction.equals("3")) {
@@ -233,6 +231,7 @@ public class VideoSystem extends JFrame {
 							dateReturn, 
 							damaged);
 					System.out.println(objEvent.resultMessage);
+					this.presentOption();
 						
 				//show all video
 				} else if (inputFunction.equals("5")) {

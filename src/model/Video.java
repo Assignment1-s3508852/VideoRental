@@ -3,7 +3,7 @@ import model.VideoCopy;
 
 public class Video {
 	public enum Categories {
-		Comedy, Action, Adventure, Drama, Horror, Thriller, Crime, History
+		Comedy, Action, Family, Drama
 	}
 	private VideoCopy videoCopy;
 	private int videoID;
