@@ -1,20 +1,20 @@
 package model;
 
-import java.util.Date;
-
 public class VideoCopy {
 	private int copyID;
 	private String datePurchase;
 	private boolean damage;
 	private boolean availale;
 	private int noOfRent;
-
-	public void init(int aCopyID, String aDatePurchase, boolean aDamage, boolean aAvailale, int aNoOfRent) {
+	private int videoID;
+	
+	public void init(int aCopyID, String aDatePurchase, boolean aDamage, boolean aAvailale, int aNoOfRent, int aVideoID) {
 		this.copyID = aCopyID;
 		this.datePurchase = aDatePurchase;
 		this.damage = aDamage;
 		this.availale = aAvailale;
 		this.noOfRent = aNoOfRent;
+		this.videoID = aVideoID;
 	}
 
 	public int getCopyID() {
@@ -55,5 +55,13 @@ public class VideoCopy {
 
 	public void setNoOfRent(int noOfRent) {
 		this.noOfRent = noOfRent;
+	}
+
+	public int getVideoID() {
+		return videoID;
+	}
+
+	public void setVideoID(int videoID) {
+		this.videoID = videoID;
 	}
 }

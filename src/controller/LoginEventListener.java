@@ -57,7 +57,6 @@ public class LoginEventListener implements ActionListener {
 	}
 
 	public boolean addCustomer(String aName, String aAddress, String aEmail, String aTel, String aRating, String aPassword) {
-		//insert into CUSTOMER values (001, 'Max', '1 Truganini Melbourrne', 'max123@gmail.com', '03123456', 'S');
 		SQLAdapter sqlAdapter = SQLAdapter.getInstance();
 		int custID = this._mCustomer.size() + 1;
 		String rating = aRating;
@@ -73,8 +72,10 @@ public class LoginEventListener implements ActionListener {
 		objects.add(rating);
 		objects.add(aPassword);
 		
-		if (sqlAdapter.insertIntoTable("INSERT INTO CUSTOMER VALUES (?, ?, ?, ?, ?, ?, ?)", objects))
+		if (sqlAdapter.insertIntoTable("INSERT INTO CUSTOMER VALUES (?, ?, ?, ?, ?, ?, ?)", objects)) {
+			this.loadCustomer(sqlAdapter);
 			return true;
+		}
 		return false;
 	}
 	
@@ -84,6 +85,10 @@ public class LoginEventListener implements ActionListener {
 	
 	public Customer getCurrentCustomer() {
 		return this._currentCustomer;
+	}
+	
+	public Customer getCustomerWithName(String aName) {
+		return this._mCustomer.get(aName);
 	}
 
 	private void loadClerk(SQLAdapter aSQLAdapter) {

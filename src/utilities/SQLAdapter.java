@@ -72,7 +72,7 @@ public class SQLAdapter {
 					String value = rs.getString(key);
 					tempData.put(key, value);
 				}	
-				System.out.println(tempData);
+//				System.out.println(tempData);
 				dataList.add(tempData);
 			}
 			return dataList;
@@ -88,7 +88,7 @@ public class SQLAdapter {
 		try {
 	        PreparedStatement statement = (PreparedStatement)connection.prepareStatement(aQueryString);
 			for (int i = 0; i < aObjects.size(); i++) {
-				System.out.println(aObjects.get(i));
+//				System.out.println(aObjects.get(i));
 				statement.setObject(i + 1, aObjects.get(i));
 			}
 			statement.executeUpdate();	
@@ -105,7 +105,7 @@ public class SQLAdapter {
 		try {
 	        PreparedStatement statement = (PreparedStatement)connection.prepareStatement(aQueryString);
 			for (int i = 0; i < aObjects.size(); i++) {
-				System.out.println(aObjects.get(i));
+//				System.out.println(aObjects.get(i));
 				statement.setObject(i + 1, aObjects.get(i));
 			}
 			statement.executeUpdate();	
