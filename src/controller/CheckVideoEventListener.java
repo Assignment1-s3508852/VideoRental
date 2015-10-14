@@ -1,5 +1,16 @@
 package controller;
 
+import java.io.UnsupportedEncodingException;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.AddressException;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DateFormat;
@@ -10,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import utilities.SQLAdapter;
 import model.ObjectEvent;
@@ -48,12 +60,13 @@ public class CheckVideoEventListener implements ActionListener {
 		return null;
 	}
 	
-	public ObjectEvent emailCustomer(Customer aCustomer, Transaction aTransaction, Map<String, VideoCopy> aVideoCopys, Map<String, Video> aVideos) {
+	public ObjectEvent emailCustomer(Customer aCustomer, Transaction aTransaction, Map<String, VideoCopy> aVideoCopys, Map<String, Video> aVideos) throws UnsupportedEncodingException {
 		ObjectEvent event = new ObjectEvent();
 		event.isSuccessful = false;
-		event.resultMessage = "No reserve videos are found for this transaction";
+		event.resultMessage = "none of emails are sent...";
 		
 		String email = aCustomer.getEmail();
+		String name = aCustomer.getName();
 		
 		String[] listOfReveveCopyID = aTransaction.getR_videoCopyIDs().split(",");
 		String msgAlert = "Mail is sent to " + email + "\nMessage : "; 
@@ -62,12 +75,49 @@ public class CheckVideoEventListener implements ActionListener {
 			if (copyID.equals(""))
 				continue;
 			
-			event.isSuccessful = true;
 			VideoCopy copy = aVideoCopys.get(copyID);
 			Video video = aVideos.get(String.valueOf(copy.getVideoID()));
 			msgAlert += video.getTitle() + " is already available for rent now.\n";
 		}
-		event.resultMessage = msgAlert;
+		
+		Properties props = new Properties();
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.starttls.enable", "true");
+		props.put("mail.smtp.host", "smtp.gmail.com");
+		props.put("mail.smtp.port", "587");
+
+		final String emailFrom = "chaithat.sukra@gmail.com";
+		final String password = "Ch@mp2727";
+		
+		Session session = Session.getInstance(props,
+				  new javax.mail.Authenticator() {
+					protected PasswordAuthentication getPasswordAuthentication() {
+						return new PasswordAuthentication(emailFrom,
+								password);
+					}
+				  });
+		try {
+			event.isSuccessful = true;
+
+			Message message = new MimeMessage(session);
+			message.setFrom(new InternetAddress(emailFrom));
+			message.setRecipients(Message.RecipientType.TO,
+				InternetAddress.parse(email));
+			message.setSubject("Your videos are already available for reserve");
+			message.setText(msgAlert);
+
+			Transport.send(message);
+
+			event.resultMessage = "email is sent to " + email + "\n" +"name : " + name + " sucessfully";
+
+        } catch (AddressException e) {
+        	event.resultMessage = "address error";
+			System.out.println(e);
+			
+        } catch (MessagingException e) {
+        	event.resultMessage = "message error";
+        	System.out.println(e);
+        }
 		return event;
 	}
 	

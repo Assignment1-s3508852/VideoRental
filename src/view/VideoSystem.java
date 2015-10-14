@@ -5,6 +5,7 @@ import controller.LoginEventListener.TypeUser;
 import controller.LoadVideoEventListener;
 import controller.CheckVideoEventListener;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -242,11 +243,19 @@ public class VideoSystem extends JFrame {
 					Transaction transac = this._checkVideo.getTransaction(inputTrans);
 					if (transac != null) {
 						Customer cust = this._loginBL.getCustomerWithID(transac.getCustID());
-						ObjectEvent objEvent = this._checkVideo.emailCustomer(cust, 
-								transac, 
-								this._loadVideoBL.getListOfVideoCopys(), 
-								this._loadVideoBL.getListOfVideos());
-						System.out.println(objEvent.resultMessage);
+						
+						try {
+							ObjectEvent objEvent = this._checkVideo.emailCustomer(cust, 
+									transac, 
+									this._loadVideoBL.getListOfVideoCopys(), 
+									this._loadVideoBL.getListOfVideos());
+							if (objEvent.isSuccessful)
+								System.out.println(objEvent.resultMessage);
+						
+						} catch (UnsupportedEncodingException e) {
+							System.out.println(e);
+							e.printStackTrace();
+						}
 					}
 					this.presentOption();
 				}
