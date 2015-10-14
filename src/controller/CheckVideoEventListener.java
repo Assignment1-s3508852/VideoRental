@@ -48,6 +48,29 @@ public class CheckVideoEventListener implements ActionListener {
 		return null;
 	}
 	
+	public ObjectEvent emailCustomer(Customer aCustomer, Transaction aTransaction, Map<String, VideoCopy> aVideoCopys, Map<String, Video> aVideos) {
+		ObjectEvent event = new ObjectEvent();
+		event.isSuccessful = false;
+		event.resultMessage = "No reserve videos are found for this transaction";
+		
+		String email = aCustomer.getEmail();
+		
+		String[] listOfReveveCopyID = aTransaction.getR_videoCopyIDs().split(",");
+		String msgAlert = "Mail is sent to " + email + "\nMessage : "; 
+				
+		for (String copyID : listOfReveveCopyID) {
+			if (copyID.equals(""))
+				continue;
+			
+			event.isSuccessful = true;
+			VideoCopy copy = aVideoCopys.get(copyID);
+			Video video = aVideos.get(String.valueOf(copy.getVideoID()));
+			msgAlert += video.getTitle() + " is already available for rent now.\n";
+		}
+		event.resultMessage = msgAlert;
+		return event;
+	}
+	
 	public ObjectEvent checkoutVideo(Transaction aTransaction, Map<String, VideoCopy> aVideoCopys, Map<String, Video> aVideos) {
 		ObjectEvent event = new ObjectEvent();
 		event.isSuccessful = false;
@@ -60,9 +83,14 @@ public class CheckVideoEventListener implements ActionListener {
 		objForTrans.add(transacID);
 		if (sqlAdapter.updateTable("UPDATE TRANSACTION SET reviewed = ? WHERE transacID = ?", objForTrans)) {				
 			event.isSuccessful = true;
+
+			//for rental videos
+			String[] listOfCopyID = aTransaction.getVideoCopyIDs().split(",");
+			String coMessage = "";
 			
-			String[] listOfCopyID = aTransaction.getVideoIDs().split(",");
 			for (String copyID : listOfCopyID) {
+				if (copyID.equals(""))
+					continue;
 				List<Object> objForTransCopy = new ArrayList<Object>();
 				objForTransCopy.add(this._mTransactionCopy.size() + 1);
 				
@@ -88,27 +116,36 @@ public class CheckVideoEventListener implements ActionListener {
 				objForTransCopy.add(aTransaction.getTransacID());
 				objForTransCopy.add(copyID);
 				
-				String coMessage = "";
 				if (sqlAdapter.insertIntoTable("INSERT INTO TRANSACTION_COPY VALUES (?, ?, ?, ?, ?, ?, ?)", objForTransCopy)) {
-					coMessage = video.getTitle() + "is checkouted successfully.\n";
+					coMessage = video.getTitle() + " is checkouted for rent successfully.\n";
 					this.loadTransactionCopys(sqlAdapter);
 				} else {
-					coMessage = video.getTitle() + "is checkouted unsuccessfully.\n";
+					coMessage = video.getTitle() + " is checkouted for rent unsuccessfully.\n";
 				}
 				event.resultMessage = event.resultMessage + coMessage;
-			}	
+			}
+			
+			//for rental videos
+			String[] listOfReveveCopyID = aTransaction.getR_videoCopyIDs().split(",");
+			for (String copyID : listOfReveveCopyID) {
+				if (copyID.equals(""))
+					continue;
+				List<Object> objForTransCopy = new ArrayList<Object>();
+				objForTransCopy.add(this._mTransactionCopy.size() + 1);
+				
+				VideoCopy copy = aVideoCopys.get(copyID);
+				Video video = aVideos.get(String.valueOf(copy.getVideoID()));
+				coMessage = video.getTitle() + " is checkouted for reserve successfully.\n";
+				event.resultMessage = event.resultMessage + coMessage;
+			}
 			return event;
 		} else {
-			event.resultMessage = "Transaction is update unsuccessfully.";
+			event.resultMessage = "Transaction is updated unsuccessfully.";
 		}
 		return event;
 	}
-	
-	public boolean checkReturnVideo() {
-		return true;
-	}
-		
-	public boolean createTransaction(Customer aCustomer, String aListOfVideoID) {
+			
+	public boolean createTransaction(Customer aCustomer, String aListOfVideoIDs, String aListOfVideoCopyIDs) {
 		SQLAdapter sqlAdapter = SQLAdapter.getInstance();
 
 		List<Object> objects = new ArrayList<Object>();
@@ -118,8 +155,9 @@ public class CheckVideoEventListener implements ActionListener {
 		objects.add(dateFormat.format(date));
 		objects.add(aCustomer.getCustomerID());		
 		objects.add(false);
-		objects.add(aListOfVideoID);
-		if (sqlAdapter.insertIntoTable("INSERT INTO TRANSACTION VALUES (?, ?, ?, ?, ?)", objects)) {
+		objects.add(aListOfVideoIDs);
+		objects.add(aListOfVideoCopyIDs);
+		if (sqlAdapter.insertIntoTable("INSERT INTO TRANSACTION VALUES (?, ?, ?, ?, ?, ?)", objects)) {
 			this.loadTransactions(sqlAdapter);
 			return true;		
 		}
@@ -177,10 +215,11 @@ public class CheckVideoEventListener implements ActionListener {
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
+			objTransCopyUpdate.add(false);
 			objTransCopyUpdate.add(dateReturn);
 			objTransCopyUpdate.add(charge);
 			objTransCopyUpdate.add(aTransacCopy.getCopyID());
-			if (adapter.updateTable("UPDATE TRANSACTION_COPY SET dateReturn = ?, rentalCharged = ? WHERE copyID = ?", objTransCopyUpdate)) {
+			if (adapter.updateTable("UPDATE TRANSACTION_COPY SET status = ?, dateReturn = ?, rentalCharged = ? WHERE copyID = ?", objTransCopyUpdate)) {
 				event.isSuccessful = true;
 				event.resultMessage += videoName + " is return\nRental change is " + charge;
 			}
@@ -201,7 +240,7 @@ public class CheckVideoEventListener implements ActionListener {
 	private void loadTransactions(SQLAdapter aSQLAdapter) {
 		this._mTransaction.clear();
 
-		String[] mappingTransaction = {"transacID", "rentaldate", "custID", "reviewed", "videoIDs"};
+		String[] mappingTransaction = {"transacID", "rentaldate", "custID", "reviewed", "videoCopyIDs", "r_videoCopyIDs"};
 		
 		ArrayList<Map<String, String>> dataList = aSQLAdapter.getData(mappingTransaction, "select * from TRANSACTION");
 		for (Map<String, String> mapTransaction : dataList) {
@@ -211,11 +250,11 @@ public class CheckVideoEventListener implements ActionListener {
 					mapTransaction.get("rentaldate"), 
 					Integer.parseInt(mapTransaction.get("custID")), 
 					mapTransaction.get("reviewed"), 
-					mapTransaction.get("videoIDs"));
+					mapTransaction.get("videoCopyIDs"), 
+					mapTransaction.get("r_videoCopyIDs"));
 			if (transaction != null)
 				this._mTransaction.put(String.valueOf(transaction.getTransacID()), transaction);
 		}
-		System.out.println(this._mTransaction);
 	}
 	
 	private void loadTransactionCopys(SQLAdapter aSQLAdapter) {

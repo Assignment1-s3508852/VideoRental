@@ -102,10 +102,10 @@ public class LoadVideoEventListener implements ActionListener {
 				videoSelected.setVideoCopy(videoCopy);
 				objEvent.objResult = videoSelected;
 
-				//check for available
-				if (isAvailable) {
-					//check for damage
-					if (!isDamaged) {
+				//check for damage
+				if (!isDamaged) {
+					//check for available
+					if (isAvailable) {
 						//check for over rental
 						if (noOfRent < 100) {
 							objEvent.isSuccessful = true;
@@ -116,13 +116,13 @@ public class LoadVideoEventListener implements ActionListener {
 							continue;
 						}
 					} else {
-						objEvent.resultMessage = " is damaged";
+						objEvent.resultMessage = " unavailable";
 						continue;
 					}
 				} else {
-					objEvent.resultMessage = " unavailable";
+					objEvent.resultMessage = " is damaged";
 					continue;
-				}	
+				}
 			}
 		}
 		return objEvent;
@@ -176,6 +176,10 @@ public class LoadVideoEventListener implements ActionListener {
 		if (sqlAdapter.updateTable("UPDATE VIDEO_COPY SET available = ? WHERE copyID = ?", objects))
 			return true;
 		return false;
+	}
+	
+	public boolean reserveVideo(Video aVideo) {
+		return true;
 	}
 
 	private void loadVideo(SQLAdapter aAdapter) {

@@ -74,9 +74,8 @@ public class Video {
 		this.videoCopy = videoCopy;
 	}
 	
-	//int aVideoID, String aTitle, float aRentalCharge, Categories aCategories, int aRentPeriod, String aYearRelease, float aOverdueCharge, VideoCopy aVideoCopy
 	public String toString() {
-		return "VideoID :" + Integer.toString(videoID) + "\n" + "Title : " + title + "\n" + "RentalCharge : " + Float.toString(rentalCharge) + "\n" + "Categories" + categories + "\n" + "RentPeriod : " + Float.toString(rentPeriod) + "\n" + "YearRelease : " + yearRelease + "\n" + "OverdueCharge : " + Float.toString(overdueCharge);
+		return "VideoID :" + Integer.toString(videoID) + "\n" + "Title : " + title + "\n" + "RentalCharge : " + Float.toString(rentalCharge) + "\n" + "Categories : " + categories + "\n" + "RentPeriod : " + Float.toString(rentPeriod) + "\n" + "YearRelease : " + yearRelease + "\n" + "OverdueCharge : " + Float.toString(overdueCharge);
 	}
 
 }

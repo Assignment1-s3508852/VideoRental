@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 
 import org.junit.Test;
 
+import model.Customer;
 import model.ObjectEvent;
 import model.Transaction;
 import model.TransactionCopy;
@@ -125,7 +126,6 @@ public class VideoSystem extends JFrame {
 	}
 	
 	void presentOption() {
-
 		String inputOption = this.getUserInputByShowingMessage("*****Option*****\n1 = information, 2 = function : ");
 
 		//Admin || Clerk
@@ -143,8 +143,6 @@ public class VideoSystem extends JFrame {
 				
 				//add customer
 				if (inputFunction.equals("1")) {
-					//insert into VIDEO values (001, 'Batman', 1.00, 'Adventure', 7, 2000, 5.00);
-					//CustID | name    | address  | email | Custel | rating | password
 					String inputName = this.getUserInputByShowingMessage("Name : ");
 					String inputAddress = this.getUserInputByShowingMessage("Address : ");
 					String inputEmail = this.getUserInputByShowingMessage("Email : ");
@@ -201,7 +199,7 @@ public class VideoSystem extends JFrame {
 					List<Transaction> unrevieweds = this._checkVideo.getWaitingReviewTransactions();
 					for (Transaction transaction : unrevieweds) {
 						System.out.println(transaction);
-						if (transaction.getVideoIDs() != null) {
+						if (transaction.getVideoCopyIDs() != null) {
 							ObjectEvent event = this._checkVideo.checkoutVideo(transaction, 
 									this._loadVideoBL.getListOfVideoCopys(), 
 									this._loadVideoBL.getListOfVideos());
@@ -239,8 +237,19 @@ public class VideoSystem extends JFrame {
 					this.presentOption();
 					
 				//communicate with users
-				} else if (inputFunction.equals("6"))
-				System.out.println(inputFunction);
+				} else if (inputFunction.equals("6")) {
+					String inputTrans = this.getUserInputByShowingMessage("Email to transactionID : ");
+					Transaction transac = this._checkVideo.getTransaction(inputTrans);
+					if (transac != null) {
+						Customer cust = this._loginBL.getCustomerWithID(transac.getCustID());
+						ObjectEvent objEvent = this._checkVideo.emailCustomer(cust, 
+								transac, 
+								this._loadVideoBL.getListOfVideoCopys(), 
+								this._loadVideoBL.getListOfVideos());
+						System.out.println(objEvent.resultMessage);
+					}
+					this.presentOption();
+				}
 			}
 		}
 		
@@ -276,27 +285,43 @@ public class VideoSystem extends JFrame {
 				//Rent video
 				} else if (inputFunction.equals("4")) {
 					String inputNoOfVideoRent = this.getUserInputByShowingMessage("No of video rent : ");
+					if (Integer.parseInt(inputNoOfVideoRent) > 5) {
+						System.out.println("5 movies are limited for rent and reserve.");
+						this.presentOption();
+						return;
+					}
 					String listOfVideo = "";
+					String listOfVideoReserve = "";
 					for (int i = 0; i < Integer.parseInt(inputNoOfVideoRent); i++) {
 						String inputVideoID = this.getUserInputByShowingMessage("Which videoID : ");
 						ObjectEvent objEvent =  this._loadVideoBL.getVideoCopyFromVideoID(inputVideoID);
 						Video video = (Video)objEvent.objResult;
-						if (objEvent.isSuccessful) {
+						if (objEvent.resultMessage.equals(" unavailable")) {
+							String inputReserve = this.getUserInputByShowingMessage("Do you want to reserve?[1:NO, 2:YES] : ");
+							if (inputReserve.equals("2"))
+								listOfVideoReserve += String.valueOf(video.getVideoCopy().getCopyID()) + ",";								
+						
+						} else if (objEvent.isSuccessful) {
 							boolean isRent = this._loadVideoBL.rentVideo(video);
 							if (isRent) {
 								System.out.println(video.getTitle() + " is rent");
 								listOfVideo += String.valueOf(video.getVideoCopy().getCopyID()) + ",";
 							}
+						
 						} else {
 							i--;
 							System.out.println(video.getTitle() + objEvent.resultMessage);
 						}
 					}
-					if (listOfVideo != null && listOfVideo.length() > 1) {
+					if (listOfVideo != null && listOfVideo.length() > 1)
 						listOfVideo = listOfVideo.substring(0, listOfVideo.length() - 1);
-						 if (this._checkVideo.createTransaction(this._loginBL.getCurrentCustomer(), listOfVideo))
-							 System.out.println("Rent successfully");
-					}
+						
+					if (listOfVideoReserve != null && listOfVideoReserve.length() > 1) 
+						listOfVideoReserve = listOfVideoReserve.substring(0, listOfVideoReserve.length() - 1);
+					
+					if (this._checkVideo.createTransaction(this._loginBL.getCurrentCustomer(), listOfVideo, listOfVideoReserve))
+						System.out.println("Rent successfully");
+
 					this.presentOption();
 				}
 			}

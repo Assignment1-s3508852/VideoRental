@@ -2,6 +2,7 @@ package controller;
 
 import model.Customer;
 import model.Clerk;
+import model.VideoCopy;
 import utilities.SQLAdapter;
 import view.VideoSystem;
 
@@ -36,7 +37,6 @@ public class LoginEventListener implements ActionListener {
 	}
 	
 	public TypeUser verifyLogin(String aUsername, String aPassword) {
-		System.out.println(this._mCustomer);
 		if (this._mCustomer.containsKey(aUsername)) {
 			this._currentCustomer = this._mCustomer.get(aUsername);
 			if (aPassword.equals(this._currentCustomer.getPassword())) {
@@ -87,6 +87,15 @@ public class LoginEventListener implements ActionListener {
 		return this._currentCustomer;
 	}
 	
+	public Customer getCustomerWithID(int aID) {
+		for (Map.Entry<String, Customer> entry : this._mCustomer.entrySet()) {
+			Customer cust = entry.getValue();
+			if (cust.getCustomerID() == aID)
+				return cust;
+		}
+		return null;
+	}
+	
 	public Customer getCustomerWithName(String aName) {
 		return this._mCustomer.get(aName);
 	}
@@ -108,7 +117,7 @@ public class LoginEventListener implements ActionListener {
 			if (clerk != null)
 				this._mClerk.put(clerk.getName(), clerk);
 		}
-		System.out.println(this._mClerk);
+//		System.out.println(this._mClerk);
 	}
 	
 	private void loadCustomer(SQLAdapter aSQLAdapter) {

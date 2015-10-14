@@ -2,18 +2,20 @@ package model;
 
 public class Transaction {
 	private int transacID;
-	private String videoIDs;
-
+	private String videoCopyIDs;
+	private String r_videoCopyIDs;
+	
 	protected String rentaldate;
 	protected int custID;
 	private boolean reviewed;
 	
-	public void init(int aTransacID, String aRentaldate, int aCustID, String aReviewed, String aVideoIDs) {
+	public void init(int aTransacID, String aRentaldate, int aCustID, String aReviewed, String aCopyIDs, String aRCopyIDs) {
 		this.transacID = aTransacID;
 		this.rentaldate = aRentaldate;
 		this.custID = aCustID;
 		this.reviewed = aReviewed.equals("0")? false : true;
-		this.videoIDs = aVideoIDs;
+		this.videoCopyIDs = aCopyIDs;
+		this.r_videoCopyIDs = aRCopyIDs;
 	}
 	
 	public int getTransacID() {
@@ -41,11 +43,19 @@ public class Transaction {
 		this.custID = aCustID;
 	}
 
-	public String getVideoIDs() {
-		return videoIDs;
+	public String getVideoCopyIDs() {
+		return videoCopyIDs;
 	}
 
-	public void setVideoIDs(String videoIDs) {
-		this.videoIDs = videoIDs;
+	public void setVideoCopyIDs(String videoCopyIDs) {
+		this.videoCopyIDs = videoCopyIDs;
+	}
+
+	public String getR_videoCopyIDs() {
+		return r_videoCopyIDs;
+	}
+
+	public void setR_videoCopyIDs(String r_videoCopyIDs) {
+		this.r_videoCopyIDs = r_videoCopyIDs;
 	}
 }
